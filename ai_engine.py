@@ -1,10 +1,11 @@
-import google.generativeai as genai
 import json
 import os
 import streamlit as st
+from google import genai
+from google.genai import types
 
-GEMINI_API_KEY = st.secrets.get("GEMINI_API_KEY") or os.getenv("GEMINI_API_KEY") or "AIzaSyBqMazJfZVFFafGgCXuLcBxvfSGLG9-2IA"
-genai.configure(api_key=GEMINI_API_KEY)
+API_KEY = st.secrets.get("GEMINI_API_KEY") or os.getenv("GEMINI_API_KEY") or "AIzaSyBqMazJfZVFFafGgCXuLcBxvfSGLG9-2IA"
+client = genai.Client(api_key=API_KEY)
 
 def generate_roadmap(target_role,experience_level,current_skills):
     """
@@ -63,9 +64,11 @@ def generate_roadmap(target_role,experience_level,current_skills):
     """
 
     try:
-        response = model.generate_content(
-            prompt,
-            generation_config={"response_mime_type": "application/json"}
+        response = client.models.generate_content(
+            model = 'gemini-2.5-flash'
+            contents = prompt,
+            config=types.GenerateContentConfig(
+                "response_mime_type": "application/json"
         )
         raw_json_text = response.text
         data_dictionary = json.loads(raw_json_text)
