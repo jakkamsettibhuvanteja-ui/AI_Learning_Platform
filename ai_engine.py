@@ -1,7 +1,9 @@
 import google.generativeai as genai
 import json
+import os
+import streamlit as st
 
-GEMINI_API_KEY = "AIzaSyBqMazJfZVFFafGgCXuLcBxvfSGLG9-2IA"
+GEMINI_API_KEY = st.secrets.get("GEMINI_API_KEY") or os.getenv("GEMINI_API_KEY") or "AIzaSyBqMazJfZVFFafGgCXuLcBxvfSGLG9-2IA"
 genai.configure(api_key=GEMINI_API_KEY)
 
 def generate_roadmap(target_role,experience_level,current_skills):
