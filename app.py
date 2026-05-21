@@ -18,7 +18,7 @@ current_skills = st.sidebar.multiselect("Select your Current Skills",["Python","
 
 if st.sidebar.button("🚀 Generate Market Aligned Roadmap"):
     with st.spinner("Analyzing 2026 Market Standards and generating your path..."):
-        live_result = generate_roadmap(target_role,experience_level,current_skills)
+        live_result = generate_market-roadmap(target_role,experience_level,current_skills)
 
         if live_result:
             st.session_state.ai_data = live_result
