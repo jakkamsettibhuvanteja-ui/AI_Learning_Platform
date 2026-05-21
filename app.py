@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from ai_engine import generate_roadmap
+from ai_engine import generate_market_roadmap
 
 st.set_page_config(
     page_title = "AI Market-Driven Learning Platform",
