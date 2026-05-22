@@ -7,17 +7,17 @@ from google.genai import types
 API_KEY = st.secrets.get("GEMINI_API_KEY") or os.getenv("GEMINI_API_KEY") or "AIzaSyBqMazJfZVFFafGgCXuLcBxvfSGLG9-2IA"
 client = genai.Client(api_key=API_KEY)
 
-def generate_roadmap(target_role,experience_level,current_skills):
+def generate_roadmap(target_role, experience_level, current_skills):
     """
     Takes user profile inputs, sends a structured system prompt to Gemini,
     and returns a clean Python Dictionary parsed from the AI's JSON output.
     """
-    model = genai.GenerativeModel("gemini-2.5-flash")
-
+    # 🌟 FIXED: Removed the old legacy genai.GenerativeModel initialization line
+    
     prompt = f"""
     You are an Elite IT career Strategist and Tech Market Analyst.
     Analyze the following Candidate Profile and provide an industry-aligned
-      learning path according to current 2026 market standards.
+    learning path according to current 2026 market standards.
     
     CANDIDATE PROFILE:
     - Target Role: {target_role}
@@ -27,11 +27,11 @@ def generate_roadmap(target_role,experience_level,current_skills):
     YOUR INSTRUCTIONS:
     1. Assess the 2026 market demand status and average entry salary for this target role.
     2. Conduct a brief skill gap analysis warning.
-    3. Provide exactly 3 'Easy Options'(Low Hanging fruit modules) to bridge immediate gaps.
-    4. Provide exactly 2 'Better Options'(High Value, Premium core competencies) for long-term career growth.
+    3. Provide exactly 3 'Easy Options' (Low Hanging fruit modules) to bridge immediate gaps.
+    4. Provide exactly 2 'Better Options' (High Value, Premium core competencies) for long-term career growth.
 
-    CRITICAL CONSTRAINT: You must output your entire response only as a valid JSON Object.
-    Do not include any conversational text,intro, or markdown blocks like '''json.
+    CRITICAL CONSTRAINT: You must output your entire response only as a single valid JSON Object.
+    Do not include any conversational text, intro, or markdown wrapper layout tags like ```json.
     Follow this exact JSON Structural template perfectly:
 
     {{
@@ -39,13 +39,11 @@ def generate_roadmap(target_role,experience_level,current_skills):
         "average_salary": "string (e.g., $120,000+)",
         "hiring_velocity": "string (e.g., Aggressive)",
         "gap_analysis_text": "string (A Direct assessment of what they lack)",
-        "_NEW_KEY_": "---------------------------------------------"
         "market_trend_data": {{
             "months": ["Jan", "Feb", "Mar", "Apr", "May"],
             "job_openings": [100, 120, 145, 130, 165],
             "applicants": [80, 85, 90, 88, 95]
         }},
-        "---------------------------------------------------------": "",
         "easy_modules": [
             {{
                 "title": "string",
@@ -53,7 +51,7 @@ def generate_roadmap(target_role,experience_level,current_skills):
                 "action_plan": "string"
             }}
         ],
-        "better options": [
+        "better_options": [
             {{
                 "competency": "string",
                 "project_scope": "string",
@@ -64,26 +62,30 @@ def generate_roadmap(target_role,experience_level,current_skills):
     """
 
     try:
+        # 🌟 FIXED: Restructured with appropriate commas and clear dictionary parameters
         response = client.models.generate_content(
-            model = 'gemini-2.5-flash'
-            contents = prompt,
+            model='gemini-2.5-flash',
+            contents=prompt,
             config=types.GenerateContentConfig(
-                "response_mime_type": "application/json"
+                response_mime_type="application/json"
+            )
         )
+        
         raw_json_text = response.text
         data_dictionary = json.loads(raw_json_text)
 
         if "easy_modules" not in data_dictionary or not isinstance(data_dictionary["easy_modules"], list):
             data_dictionary["easy_modules"] = []
 
-        possible_keys = ["better_options","Better_Options","better_paths","premium_options"]
+        possible_keys = ["better_options", "Better_Options", "better_paths", "premium_options", "better options"]
         target_key = None
 
         for k in possible_keys:
             if k in data_dictionary:
                 target_key = k
                 break
-        if target_key and target_key!= "better_options":
+                
+        if target_key and target_key != "better_options":
             data_dictionary["better_options"] = data_dictionary.pop(target_key)
 
         if "better_options" not in data_dictionary or not isinstance(data_dictionary["better_options"], list):
@@ -91,7 +93,7 @@ def generate_roadmap(target_role,experience_level,current_skills):
                 {
                     "competency": f"Advanced {target_role} Architecture",
                     "project_scope": f"Design and Implement a high-throughput system optimizing modern industry benchmarks.",
-                    "market_premeium": f"Elite Tier Premium"
+                    "market_premium": f"Elite Tier Premium"
                 }
             ]
 
@@ -101,7 +103,9 @@ def generate_roadmap(target_role,experience_level,current_skills):
             if "title" not in module: module["title"] = "Custom Learning Module"
             if "objective" not in module: module["objective"] = "Deepen Technical mastery of this Stack Component."
             if "action_plan" not in module: module["action_plan"] = "Build a localized project showcasing this competency."
+            
         return data_dictionary
+        
     except Exception as e:
         print(f"Error calling AI Engine: {e}")
         return None
