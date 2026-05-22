@@ -108,4 +108,5 @@ def generate_roadmap(target_role, experience_level, current_skills):
         
     except Exception as e:
         print(f"Error calling AI Engine: {e}")
+        st.sidebar.error(f"⚠️ Google API Gateway Response: {e}")
         return None
