@@ -4,7 +4,7 @@ import streamlit as st
 from google import genai
 from google.genai import types
 
-API_KEY = st.secrets.get("GEMINI_API_KEY") or os.getenv("GEMINI_API_KEY") or "AIzaSyBqMazJfZVFFafGgCXuLcBxvfSGLG9-2IA"
+API_KEY = st.secrets.get("GEMINI_API_KEY") or os.getenv("GEMINI_API_KEY") or "AIzaSyDODrppTnV4r92GGtM_noVWt7vn034fyK0"
 client = genai.Client(api_key=API_KEY)
 
 def generate_roadmap(target_role, experience_level, current_skills):
